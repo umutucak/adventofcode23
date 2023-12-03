@@ -48,26 +48,64 @@ directions = [
     (1, -1),  # down-left
     (1, 1),  # down-right
 ]
-sum = 0
-part = False
-for r in range(len(b)):
-    b[r] += "."
-    num = ""
-    for c in range(len(b[r])): 
-        entry:str = b[r][c]
-        if not entry.isdigit(): # if not a number move on
-            if part:
-                sum += int(num)
-                part = False
-            num = ""
-            continue
-        num += entry
-        if part: # if already found that it is valid continue reading the rest of the number
-            continue
-        legal_directions = get_legal_directions(r, c)
-        for d in legal_directions: #check 8 directions
-            target = b[r+d[0]][c+d[1]]
-            if target == "." or target.isdigit(): # if not special, continue looking
+
+def p1():
+    sum = 0
+    part = False
+    for r in range(len(b)):
+        b[r] += "."
+        num = ""
+        for c in range(len(b[r])): 
+            entry:str = b[r][c]
+            if not entry.isdigit(): # if not a number move on
+                if part:
+                    sum += int(num)
+                    part = False
+                num = ""
                 continue
-            part = True # found valid part
-print(sum)
+            num += entry
+            if part: # if already found that it is valid continue reading the rest of the number
+                continue
+            legal_directions = get_legal_directions(r, c)
+            for d in legal_directions: #check 8 directions
+                target = b[r+d[0]][c+d[1]]
+                if target == "." or target.isdigit(): # if not special, continue looking
+                    continue
+                part = True # found valid part
+    print(sum)
+
+def p2():
+    out = 0
+    part = False
+    gears = {}
+    gear_memory = tuple()
+    for r in range(len(b)):
+        b[r] += "."
+        num = ""
+        for c in range(len(b[r])): 
+            entry:str = b[r][c]
+            if not entry.isdigit(): # if not a number move on
+                if part:
+                    if gear_memory:
+                        gears[gear_memory].append(int(num))
+                        gear_memory = tuple()
+                    part = False
+                num = ""
+                continue
+            num += entry
+            if part: # if already found that it is valid continue reading the rest of the number
+                continue
+            legal_directions = get_legal_directions(r, c)
+            for d in legal_directions: #check 8 directions
+                target = b[r+d[0]][c+d[1]]
+                if target == "." or target.isdigit(): # if not special, continue looking
+                    continue
+                part = True # found valid part
+                if target == "*":
+                    gear_memory = (r+d[0],c+d[1])
+                    if gear_memory not in gears:
+                        gears[gear_memory] = []
+    
+    out = sum([value[0] * value[1] for value in gears.values() if len(value) == 2])
+    print(out)
+p2()
